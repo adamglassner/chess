@@ -1,0 +1,15 @@
+CHESS - Ravenscroft Library  (v@VERSION@)
+==========================================
+
+Developed & Published by ... Ironite
+Game Design ................ Ironite
+Art & Illustration ......... Ironite
+Chess Engine ............... Ironite
+Music ...................... Ironite
+  "The Quiet Library", "Nocturne of the Long Diagonal",
+  "Minuet in the Reading Room", "Endgame by Lamplight"
+Sound Effects .............. Ironite
+Programming ................ Ironite
+Typeface ................... Lora (SIL Open Font License, see OFL.txt)
+
+Copyright (c) 2026 Ironite. All rights reserved.

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chess</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <header id="bar">
+    <div class="title">Chess<small>Ravenscroft Library</small></div>
+    <button id="bNew" title="New game (N)">New Game</button>
+    <button id="bUndo" title="Take back a move (Ctrl+Z)">Undo</button>
+    <button id="bHint" title="Suggest a move (H)">Hint</button>
+    <button id="bFlip" title="Turn the board around (F)">Flip Board</button>
+    <button id="bDraw" title="Offer a draw">Offer Draw</button>
+    <button id="bResign" title="Resign this game">Resign</button>
+    <span class="sep"></span>
+    <button id="bMusic" title="Music (M)">&#9835; Music</button>
+    <input id="vol" type="range" min="0" max="100" title="Volume">
+    <button id="bSfx" title="Sound effects">Sounds</button>
+    <button id="bSettings" title="Board and play options">Options</button>
+    <button id="bCredits2" title="Credits and changelog">Credits</button>
+    <div class="stats"><span>Won <b id="sWon">0</b></span><span>Drawn <b id="sDrawn">0</b></span><span>Lost <b id="sLost">0</b></span></div>
+  </header>
+
+  <main id="table">
+    <canvas id="scene"></canvas>
+    <canvas id="board" width="800" height="800"></canvas>
+    <div id="promo" class="hidden"></div>
+
+    <section id="side">
+      <div class="plaque" id="pTop">
+        <canvas class="av" width="200" height="200"></canvas>
+        <div class="who"><b class="nm"></b><span class="rt"></span><span class="think"></span></div>
+        <div class="caps"></div>
+        <div class="clock hidden"></div>
+      </div>
+
+      <div id="moves" class="sheet">
+        <div class="sh">Score Sheet<span id="opening"></span></div>
+        <div id="moveList"></div>
+        <div class="nav"><button data-nav="start" title="First position (Home)">&#x23EE;</button><button data-nav="prev" title="Back one move (&larr;)">&#x25C0;</button><button data-nav="next" title="Forward one move (&rarr;)">&#x25B6;</button><button data-nav="end" title="Current position (End)">&#x23ED;</button></div>
+      </div>
+
+      <div id="status"><span id="statusText">&nbsp;</span></div>
+
+      <div class="plaque" id="pBot">
+        <canvas class="av" width="200" height="200"></canvas>
+        <div class="who"><b class="nm"></b><span class="rt"></span><span class="think"></span></div>
+        <div class="caps"></div>
+        <div class="clock hidden"></div>
+      </div>
+    </section>
+
+    <div id="banner"></div>
+    <canvas id="fx"></canvas>
+    <div id="nowPlaying"></div>
+    <div id="ver"></div>
+  </main>
+
+  <!-- title / new game -->
+  <div class="veil" id="title">
+    <div class="panel box title-box">
+      <div class="kick">An evening at the</div>
+      <h1>Chess</h1>
+      <h2>Ravenscroft Library</h2>
+      <div class="modeRow chips" id="optMode"><button data-v="ai">Play the Computer</button><button data-v="pvp">Two Players</button></div>
+      <div id="folks"></div>
+      <div id="folkTag"></div>
+      <div class="opts">
+        <div class="opt" id="rowColor"><span>Play as</span><div class="chips" id="optColor"><button data-v="white">White</button><button data-v="random">Random</button><button data-v="black">Black</button></div></div>
+        <div class="opt"><span>Clock</span><div class="chips" id="optClock"><button data-v="none">No clock</button><button data-v="5+3">5 + 3</button><button data-v="10">10 min</button><button data-v="15+10">15 + 10</button><button data-v="30">30 min</button></div></div>
+      </div>
+      <div class="startRow"><button class="big ghost hidden" id="bContinue">Continue Game</button><button class="big" id="bStart">Start Game</button></div>
+      <div class="links"><button id="bHow">How to Play</button> &middot; <button id="bSettings2">Options</button> &middot; <button id="bCredits">Credits &amp; Changelog</button></div>
+      <div class="by"><span>An</span><img src="ironite-logo.png" alt="Ironite"><span>game</span></div>
+    </div>
+  </div>
+
+  <!-- game over -->
+  <div class="veil hidden" id="over">
+    <div class="panel box over-box">
+      <canvas class="av" id="overAv" width="240" height="240"></canvas>
+      <div class="kick" id="overKick"></div>
+      <h3 id="overTitle"></h3>
+      <p id="overText"></p>
+      <p class="quote" id="overQuote"></p>
+      <div class="startRow"><button class="big" id="bRematch">Rematch</button><button class="big ghost" id="bOverNew">New Game</button></div>
+      <div class="links"><button id="bReview">Review the game</button> &middot; <button id="bPgn">Copy moves (PGN)</button></div>
+    </div>
+  </div>
+
+  <!-- confirm -->
+  <div class="veil hidden" id="confirm">
+    <div class="panel box confirm-box">
+      <h3 id="cTitle"></h3>
+      <p id="cText"></p>
+      <div class="startRow"><button class="big" id="cYes">Yes</button><button class="big ghost" id="cNo">No</button></div>
+    </div>
+  </div>
+
+  <!-- options -->
+  <div class="veil hidden closable" id="settings">
+    <div class="panel box text-panel set-panel">
+      <h3>Options</h3>
+      <div class="opts left">
+        <div class="opt"><span>Board</span><div class="chips" id="optBoard"><button data-v="walnut">Walnut &amp; Maple</button><button data-v="marble">Marble</button><button data-v="club">Club Green</button></div></div>
+        <div class="opt"><span>Show legal moves</span><div class="chips" id="optDots"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
+        <div class="opt"><span>Move speed</span><div class="chips" id="optAnim"><button data-v="slow">Relaxed</button><button data-v="normal">Normal</button><button data-v="fast">Brisk</button></div></div>
+        <div class="opt"><span>Promotion</span><div class="chips" id="optPromo"><button data-v="ask">Ask me</button><button data-v="queen">Always a queen</button></div></div>
+        <div class="opt"><span>Two players</span><div class="chips" id="optTurn"><button data-v="on">Turn the board each move</button><button data-v="off">Keep it still</button></div></div>
+      </div>
+      <p class="muted">Right-click a square to mark it, or right-drag to draw an arrow while you plan. Click anywhere on the board to clear them.</p>
+      <button class="big small" data-close>Done</button>
+    </div>
+  </div>
+
+  <div class="veil hidden closable" id="rules">
+    <div class="panel box text-panel">
+      <h3>How to Play</h3>
+      <p>Each side starts with sixteen pieces. White moves first, then the players take turns. The goal is <b>checkmate</b>: attack the enemy king so that it has no way to escape.</p>
+      <ol>
+        <li><b>Moving.</b> Click a piece and then a square, or drag it there. Dots show where it can go; rings mark captures.</li>
+        <li><b>The pieces.</b> The <b>king</b> moves one square any way. The <b>queen</b> slides any distance in any direction. The <b>rook</b> slides along ranks and files, the <b>bishop</b> along diagonals. The <b>knight</b> jumps in an L shape and can leap over pieces. A <b>pawn</b> steps forward one square (two on its first move) and captures one square diagonally forward.</li>
+        <li><b>Check.</b> When a king is attacked it is in check, and its side must get out of check straight away.</li>
+        <li><b>Castling.</b> Once per game, if the king and a rook haven't moved, the squares between are empty and the king isn't in, through or into check, the king moves two squares toward the rook and the rook hops over it. Drag the king two squares to castle.</li>
+        <li><b>En passant.</b> If a pawn moves two squares and lands beside an enemy pawn, that pawn may capture it as if it had moved one square, but only on the very next move.</li>
+        <li><b>Promotion.</b> A pawn that reaches the far side becomes a queen, rook, bishop or knight.</li>
+        <li><b>Draws.</b> Stalemate (no legal move but not in check), the same position three times, fifty moves each without a capture or pawn move, too little material to mate, or a draw offer that's accepted.</li>
+      </ol>
+      <p>Six members of the Ravenscroft Library will give you a game, from Pip the Page (just learning) to the Old Master. Your record against each of them is kept, and an unfinished game is waiting for you when you come back.</p>
+      <p class="muted">Keys: Ctrl+Z undo &middot; H hint &middot; F flip board &middot; &larr; &rarr; step through the moves &middot; N new game &middot; M music &middot; F11 full screen</p>
+      <button class="big small" data-close>Back to the Board</button>
+    </div>
+  </div>
+
+  <div class="veil hidden closable" id="credits">
+    <div class="panel box text-panel">
+      <h3>Credits</h3>
+      <div class="cred">
+        <div><span>Developed &amp; Published by</span><b>Ironite</b></div>
+        <div><span>Game Design</span><b>Ironite</b></div>
+        <div><span>Art &amp; Illustration</span><b>Ironite</b></div>
+        <div><span>Chess Engine</span><b>Ironite</b></div>
+        <div><span>Music</span><b>Ironite</b></div>
+        <div class="tunes">"The Quiet Library", "Nocturne of the Long Diagonal", "Minuet in the Reading Room", "Endgame by Lamplight"</div>
+        <div><span>Sound Effects</span><b>Ironite</b></div>
+        <div><span>Programming</span><b>Ironite</b></div>
+        <div><span>Typeface</span><b>Lora (SIL Open Font License)</b></div>
+      </div>
+      <p class="muted">Copyright &copy; 2026 Ironite. All rights reserved.</p>
+      <h3>Changelog</h3>
+      <div id="changelog" class="changelog"></div>
+      <button class="big small" data-close>Close</button>
+    </div>
+  </div>
+</div>
+<script src="core.js"></script>
+<script src="chess.js"></script>
+<script src="art.js"></script>
+<script src="music.js"></script>
+<script src="book.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
