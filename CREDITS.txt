@@ -10,6 +10,7 @@ Music ...................... Ironite
   "Minuet in the Reading Room", "Endgame by Lamplight"
 Sound Effects .............. Ironite
 Programming ................ Ironite
+Built with ................. Go and Ebitengine (Apache License 2.0)
 Typeface ................... Lora (SIL Open Font License, see OFL.txt)
 
 Copyright (c) 2026 Ironite. All rights reserved.
